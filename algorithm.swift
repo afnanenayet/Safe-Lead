@@ -11,8 +11,8 @@ import Foundation
 class algorithm {
     func leadSafe (team1_points: Int, _ team2_points: Int, _ secondsRemaining: Int, _ minutesRemaining: Int, _ posTeam: Int) -> Bool {
         var leadScore: Double //converting to a Double because 0.5 will be added or subtracted later in the function
-        var oneLead: Bool //is true if team 1 is in the lead
-        var secondsTotal = secondsRemaining + (minutesRemaining*60) //converts minutes, seconds to seconds
+        let oneLead: Bool //is true if team 1 is in the lead
+        let secondsTotal = secondsRemaining + (minutesRemaining*60) //converts minutes, seconds to seconds
         
         //find the magnitude of the lead then subtract 3
         if team1_points > team2_points { //if team 1 is in the lead
