@@ -92,6 +92,7 @@ class ViewController: NSViewController {
         var minutes: Int
         var seconds: Int
         
+        //if the user leaves minutes blank but not seconds, we assume minutes are 0 and vice versa
         if(minutesRemaining.stringValue).toInt() == nil && secondsRemaining.stringValue.toInt() != nil {
             minutes = 0
         }
