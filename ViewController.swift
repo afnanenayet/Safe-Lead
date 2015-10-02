@@ -48,13 +48,24 @@ class ViewController: NSViewController {
         compileTitle()
     }
     
-    func integerCheck() {
-        if (team1_points.stringValue).toInt() == nil || (team2_points.stringValue).toInt() == nil || ((secondsRemaining.stringValue).toInt() == nil && (minutesRemaining.stringValue).toInt() == nil){
-            submitProps.enabled = false
+    func integerCheck() -> Bool { //checks to see if inputs that need integers have integers
+        if Int((team1_points.stringValue)) == nil || Int((team2_points.stringValue)) == nil || (Int((secondsRemaining.stringValue)) == nil && Int((minutesRemaining.stringValue)) == nil){
+            return false
         }
             
         else {
+            return true
+        }
+        
+    }
+    
+    func buttonCheck() {
+        if integerCheck() {
             submitProps.enabled = true
+        }
+        
+        else {
+            submitProps.enabled = false
         }
     }
     
@@ -64,61 +75,76 @@ class ViewController: NSViewController {
         }
         
         else {
-            var titleString: String = "\(team1_name.stringValue) vs. \(team2_name.stringValue)"
+            let titleString: String = "\(team1_name.stringValue) vs. \(team2_name.stringValue)"
             self.view.window!.title = titleString
         }
         
     }
     
+    func validityPopup() { //shows a popup box to inform the user they entered invalid input
+        let alert:NSAlert = NSAlert();
+        alert.messageText = "Invalid input";
+        alert.informativeText = "Make sure you typed in numbers for all of the input fields for score and time remaining.";
+        alert.runModal();
+    }
+    
     //Disable submit buttong until all required fields have valid integers
     @IBAction func checkPoints1(sender: AnyObject) {
-        integerCheck()
+        buttonCheck()
     }
     
     
     @IBAction func checkPoints2(sender: AnyObject) {
-        integerCheck()
+       buttonCheck()
     }
     
     @IBAction func checkSeconds(sender: AnyObject) {
-        integerCheck()
+        buttonCheck()
     }
     
     
     @IBAction func submitButton(sender: AnyObject) { //performs action when submit button is clicked
-        integerCheck() //make sure all inputs are valid
-        var algorithmInstace = algorithm() //instantiating the algorithm class
-        var teamPos = pos_who.selectedRow + 1 //get the team in posession
+        let algorithmInstace = algorithm() //instantiating the algorithm class
+        let teamPos = pos_who.selectedRow + 1 //get the team in posession
         var minutes: Int
         var seconds: Int
         
-        //if the user leaves minutes blank but not seconds, we assume minutes are 0 and vice versa
-        if(minutesRemaining.stringValue).toInt() == nil && secondsRemaining.stringValue.toInt() != nil {
-            minutes = 0
-        }
+        if integerCheck() {
+            //if the user leaves minutes blank but not seconds, we assume minutes are 0 and vice versa
+            if (Int((minutesRemaining.stringValue)) == nil && Int(secondsRemaining.stringValue) != nil) {
+                minutes = 0
+            }
+                
+                
+            else {
+                minutes = Int((self.minutesRemaining.stringValue))!
+            }
             
+            if Int((minutesRemaining.stringValue)) != nil && Int(secondsRemaining.stringValue) == nil {
+                seconds = 0
+            }
+                
+            else {
+                seconds = Int((self.secondsRemaining.stringValue))!
+            }
+            
+            integerCheck() //make sure all inputs are valid
+            
+            let isLeadSafe = algorithmInstace.leadSafe(Int((team1_points.stringValue))!,Int((team2_points.stringValue))!, seconds, minutes, teamPos)
+            
+            if isLeadSafe { //TODO: make a more elaborate message
+                let outputString = "The lead is safe."
+                outputField.stringValue = outputString
+            }
+                
+            else { //TODO: make a more elaborate message
+                outputField.stringValue = "The lead is not safe."
+            }
+
+        }
         
         else {
-            minutes = (minutesRemaining.stringValue).toInt()!
-        }
-        
-        if(minutesRemaining.stringValue).toInt() != nil && secondsRemaining.stringValue.toInt() == nil {
-            seconds = 0
-        }
-        
-        else {
-            seconds = (secondsRemaining.stringValue).toInt()!
-        }
-        
-        var isLeadSafe = algorithmInstace.leadSafe((team1_points.stringValue).toInt()!,(team2_points.stringValue).toInt()!, seconds, minutes, teamPos)
-        
-        if isLeadSafe { //TODO: make a more elaborate message
-            var outputString = "The lead is safe."
-            outputField.stringValue = outputString
-        }
-        
-        else { //TODO: make a more elaborate message
-            outputField.stringValue = "The lead is not safe."
+            validityPopup();
         }
     }
     
